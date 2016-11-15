@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<declare-styleable name="FuzzyView">-->
+        <!--<attr name="src" format="reference"/>-->
+    <!--</declare-styleable>-->
+
+    <declare-styleable name="BlurryView">
+        <attr name="src" format="reference"/>
+        <attr name="image_width" format="dimension"/>
+        <attr name="image_height" format="dimension"/>
+    </declare-styleable>
+</resources>
