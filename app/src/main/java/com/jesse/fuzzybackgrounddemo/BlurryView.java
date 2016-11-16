@@ -9,8 +9,8 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 /**
@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
  */
 public class BlurryView extends RelativeLayout {
     private static final String TAG = BlurryView.class.getSimpleName();
-    private ImageView mImageView;
+    private View mBlurrySourceView;
     private Bitmap mBitmap;
 
     public BlurryView(Context context) {
@@ -29,22 +29,22 @@ public class BlurryView extends RelativeLayout {
         super(context, attrs);
     }
 
-    private ImageView getChildImageView() {
-        return (ImageView) findViewById(R.id.image_id);
+    private View findBlurrySourceView() {
+        return findViewById(R.id.image_id);
     }
 
     private void addViewObserver() {
-        mImageView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        mBlurrySourceView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public boolean onPreDraw() {
-                mImageView.getViewTreeObserver().removeOnPreDrawListener(this);
-                mImageView.setDrawingCacheEnabled(true);
-                mBitmap = mImageView.getDrawingCache();
+            public void onGlobalLayout() {
+                if (getVisibility() == VISIBLE) {
+                    mBlurrySourceView.setDrawingCacheEnabled(true);
+                    mBitmap = mBlurrySourceView.getDrawingCache();
 
-                Bitmap overlay = doBlurry(mBitmap, 10, 0.5f);
-                setBackground(new BitmapDrawable(getResources(), overlay));
-                mImageView.setDrawingCacheEnabled(false);
-                return true;
+                    Bitmap overlay = doBlurry(mBitmap, 10, 0.5f);
+                    setBackground(new BitmapDrawable(getResources(), overlay));
+                    mBlurrySourceView.setDrawingCacheEnabled(false);
+                }
             }
         });
     }
@@ -74,7 +74,7 @@ public class BlurryView extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mImageView = getChildImageView();
+        mBlurrySourceView = findBlurrySourceView();
         addViewObserver();
     }
 }

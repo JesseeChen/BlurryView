@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="images">
+        <item>@drawable/landscape</item>
+        <item>@drawable/landscape2</item>
+        <item>@drawable/landscape3</item>
+        <item>@drawable/landscape4</item>
+    </string-array>
+</resources>
