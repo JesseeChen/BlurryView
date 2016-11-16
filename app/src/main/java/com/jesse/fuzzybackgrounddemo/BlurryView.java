@@ -71,6 +71,7 @@ public class BlurryView extends RelativeLayout {
     }
 
 
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
