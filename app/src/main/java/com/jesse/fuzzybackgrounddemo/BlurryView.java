@@ -2,9 +2,9 @@ package com.jesse.fuzzybackgrounddemo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.renderscript.Allocation;
+import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
@@ -51,25 +51,26 @@ public class BlurryView extends RelativeLayout {
 
     private Bitmap doBlurry(Bitmap bitmap, int blurryRadius, float ratio) {
         long startTime = System.currentTimeMillis();
-        Bitmap overlay = Bitmap.createBitmap((int) (bitmap.getWidth() * ratio), (int) (bitmap.getHeight() * ratio), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(overlay);
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        Bitmap overlay = Bitmap.createBitmap((bitmap.getWidth()), (bitmap.getHeight()), Bitmap.Config.ARGB_8888);
 
-        //创建对象
+        //创建RenderScript对象
         RenderScript rs = RenderScript.create(getContext());
-        Allocation allocation = Allocation.createFromBitmap(rs, overlay);
-        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, allocation.getElement());
-        //渲染
-        blur.setInput(allocation);
+        //模糊对象
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
         blur.setRadius(blurryRadius);
-        blur.forEach(allocation);
-        allocation.copyTo(overlay);
-        //回收
+        //Allocation
+        Allocation input = Allocation.createFromBitmap(rs, bitmap);
+        Allocation output = Allocation.createFromBitmap(rs, overlay);
+        //渲染
+        blur.setInput(input);
+        blur.forEach(output);
+        output.copyTo(overlay);
+        //回收内存
         rs.destroy();
+        bitmap.recycle();
         Log.d(TAG, "doBlurry: during " + (System.currentTimeMillis() - startTime) + " ms");
         return overlay;
     }
-
 
 
     @Override
